@@ -21,3 +21,8 @@ spring:
       mode: embedded
       schema-locations: classpath:sql/schema.sql
       data-locations: classpath:sql/data.sql
+  ldap:
+    embedded:
+      port: 33389
+      ldif: classpath:ldap/server.ldif
+      base-dn: dc=springframework,dc=org
