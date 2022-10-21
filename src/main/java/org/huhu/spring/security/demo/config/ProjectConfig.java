@@ -6,13 +6,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * 测试自定义实现 {@link User} 和 {@link InMemoryUserDetailsService}
@@ -27,9 +27,19 @@ import java.util.List;
 public class ProjectConfig {
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        List<UserDetails> users = List.of(new User("john", "123456", "read"));
-        return new InMemoryUserDetailsService(users);
+    public UserDetailsService userDetailsService(DataSource dataSource) {
+        // 使用数据库访问用户信息
+        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
+
+        // 自定义查询
+        String usersByUsernameQuery = "select username, password, enabled from users where username = ?";
+        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
+
+        // 自定义查询
+        String authoritiesByUsernameQuery = "select username, authority from authorities where username = ?";
+        userDetailsManager.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
+
+        return userDetailsManager;
     }
 
     @Bean
