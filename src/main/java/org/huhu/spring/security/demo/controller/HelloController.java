@@ -2,6 +2,7 @@ package org.huhu.spring.security.demo.controller;
 
 import org.huhu.spring.security.demo.config.ProjectConfig;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.concurrent.DelegatingSecurityContextCallable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,14 +45,15 @@ public class HelloController {
     public String ciao() throws Exception {
         Callable<String> task = () -> {
             SecurityContext securityContext = SecurityContextHolder.getContext();
-            // 抛出空指针异常
+            // 可以获取到由DelegatingSecurityContextCallable转发来的SecurityContext
             return securityContext.getAuthentication().getName();
         };
         // 在一个异步线程的任务中调用SecurityContext
         ExecutorService executorService = Executors.newCachedThreadPool();
         try {
-            // 无法获取到
-            return "Ciao, " + executorService.submit(task).get() + "!";
+            // 通过DelegatingSecurityContextCallable将SecurityContext转发
+            DelegatingSecurityContextCallable<String> delegatingSecurityContextCallable = new DelegatingSecurityContextCallable<>(task);
+            return "Ciao, " + executorService.submit(delegatingSecurityContextCallable).get() + "!";
         } finally {
             executorService.shutdown();
         }
