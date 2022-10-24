@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL;
+import static org.springframework.security.core.context.SecurityContextHolder.MODE_THREADLOCAL;
 
 @Configuration
 public class ProjectConfig {
@@ -18,7 +18,7 @@ public class ProjectConfig {
      */
     @Bean
     public InitializingBean initializingBean() {
-        return () -> SecurityContextHolder.setStrategyName(MODE_INHERITABLETHREADLOCAL);
+        return () -> SecurityContextHolder.setStrategyName(MODE_THREADLOCAL);
     }
 
 }

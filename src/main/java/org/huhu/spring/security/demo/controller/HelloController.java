@@ -9,6 +9,10 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @RestController
 public class HelloController {
 
@@ -29,6 +33,28 @@ public class HelloController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         System.out.println(authentication.getName());
+    }
+
+    /**
+     * 使用默认的模式 {@link SecurityContextHolder#MODE_THREADLOCAL}
+     *
+     * @see ProjectConfig#initializingBean()
+     */
+    @GetMapping("/ciao")
+    public String ciao() throws Exception {
+        Callable<String> task = () -> {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            // 抛出空指针异常
+            return securityContext.getAuthentication().getName();
+        };
+        // 在一个异步线程的任务中调用SecurityContext
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        try {
+            // 无法获取到
+            return "Ciao, " + executorService.submit(task).get() + "!";
+        } finally {
+            executorService.shutdown();
+        }
     }
 
 }
