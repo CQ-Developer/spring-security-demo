@@ -3,6 +3,7 @@ package org.huhu.spring.security.demo.controller;
 import org.huhu.spring.security.demo.config.ProjectConfig;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.concurrent.DelegatingSecurityContextCallable;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,6 +55,31 @@ public class HelloController {
             // 通过DelegatingSecurityContextCallable将SecurityContext转发
             DelegatingSecurityContextCallable<String> delegatingSecurityContextCallable = new DelegatingSecurityContextCallable<>(task);
             return "Ciao, " + executorService.submit(delegatingSecurityContextCallable).get() + "!";
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    /**
+     * 使用默认的模式 {@link SecurityContextHolder#MODE_THREADLOCAL},
+     * 通过 {@link DelegatingSecurityContextExecutorService} 转发 {@link SecurityContext}.
+     *
+     * @see ProjectConfig#initializingBean()
+     */
+    @GetMapping("/hola")
+    public String hola() throws Exception {
+        Callable<String> task = () -> {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            // 可以获取到由DelegatingSecurityContextExecutorService转发来的SecurityContext
+            return securityContext.getAuthentication().getName();
+        };
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService = new DelegatingSecurityContextExecutorService(executorService);
+
+        try {
+            // 通过DelegatingSecurityContextExecutorService将SecurityContext转发
+            return "Hola, " + executorService.submit(task).get() + "!";
         } finally {
             executorService.shutdown();
         }
