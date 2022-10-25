@@ -1,10 +1,14 @@
 package org.huhu.spring.security.demo.config;
 
+import org.huhu.spring.security.demo.authentication.success.handler.CustomizedAuthenticationFailureHandler;
+import org.huhu.spring.security.demo.authentication.success.handler.CustomizedAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 public class ProjectConfig {
@@ -27,10 +31,16 @@ public class ProjectConfig {
     }
 
     /**
-     * 使用 {@link FormLoginConfigurer} 进一步配置FormLogin登录方式
+     * 通过 {@link AuthenticationSuccessHandler} 和 {@link AuthenticationFailureHandler},
+     * 对FormLogin登录进行配置.
+     *
+     * @see CustomizedAuthenticationSuccessHandler
+     * @see CustomizedAuthenticationFailureHandler
      */
     private void customizeFormLogin(FormLoginConfigurer<HttpSecurity> formLoginConfigurer) {
-        formLoginConfigurer.defaultSuccessUrl("/home", true);
+        formLoginConfigurer
+                .successHandler(new CustomizedAuthenticationSuccessHandler())
+                .failureHandler(new CustomizedAuthenticationFailureHandler());
     }
 
 }
