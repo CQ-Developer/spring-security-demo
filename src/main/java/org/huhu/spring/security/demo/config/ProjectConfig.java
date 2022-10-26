@@ -19,11 +19,11 @@ public class ProjectConfig {
         httpSecurity.httpBasic();
         // 只有ADMIN角色才能访问/hello端点
         // 只有MANAGER角色才能访问/ciao端点
-        // 其余端点任何人都能访问(包括未认证过的用户)
+        // 其余端点必须是已认证的用户才能访问
         httpSecurity.authorizeRequests()
                     .mvcMatchers("/hello").hasRole("ADMIN")
                     .mvcMatchers("/ciao").hasRole("MANAGER")
-                    .anyRequest().permitAll();
+                    .anyRequest().authenticated();
         return httpSecurity.build();
     }
 
