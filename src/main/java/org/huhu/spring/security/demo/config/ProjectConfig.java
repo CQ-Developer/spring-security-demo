@@ -15,14 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class ProjectConfig {
 
     private static final String AUTHORITY_READ = "READ";
+
     private static final String AUTHORITY_WRITE = "WRITE";
+
+    private static final String AUTHORITY_DELETE = "DELETE";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.httpBasic();
+        // 只有具备READ权限且不具备DELETE权限的用户才能访问
         httpSecurity.authorizeRequests()
                     .anyRequest()
-                    .access("hasAnyAuthority('WRITE', 'READ')");
+                    .access("hasAuthority('READ') and !hasAuthority('DELETE')");
         return httpSecurity.build();
     }
 
@@ -34,7 +38,7 @@ public class ProjectConfig {
                                .build();
         UserDetails jane = User.withUsername("jane")
                                .password("123")
-                               .authorities(AUTHORITY_WRITE)
+                               .authorities(AUTHORITY_READ, AUTHORITY_WRITE, AUTHORITY_DELETE)
                                .build();
         return new InMemoryUserDetailsManager(john, jane);
     }
