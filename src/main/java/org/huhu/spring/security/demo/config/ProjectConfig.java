@@ -17,10 +17,13 @@ public class ProjectConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.httpBasic();
-        // 只有ADMIN角色才能访问
+        // 只有ADMIN角色才能访问/hello端点
+        // 只有MANAGER角色才能访问/ciao端点
+        // 其余端点任何人都能访问(包括未认证过的用户)
         httpSecurity.authorizeRequests()
-                    .anyRequest()
-                    .hasRole("ADMIN");
+                    .mvcMatchers("/hello").hasRole("ADMIN")
+                    .mvcMatchers("/ciao").hasRole("MANAGER")
+                    .anyRequest().permitAll();
         return httpSecurity.build();
     }
 
