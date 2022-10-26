@@ -29,12 +29,12 @@ public class ProjectConfig {
         // ROLE_ADMIN: read, write, update, delete
         UserDetails john = User.withUsername("john")
                                .password("123")
-                               .authorities("ROLE_ADMIN")
+                               .roles("ADMIN")
                                .build();
         // ROLE_MANAGER: read, write
         UserDetails jane = User.withUsername("jane")
                                .password("123")
-                               .authorities("ROLE_MANAGER")
+                               .roles("MANAGER")
                                .build();
         return new InMemoryUserDetailsManager(john, jane);
     }
