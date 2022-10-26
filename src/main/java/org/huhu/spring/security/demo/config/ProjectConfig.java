@@ -22,7 +22,7 @@ public class ProjectConfig {
         httpSecurity.httpBasic();
         httpSecurity.authorizeRequests()
                     .anyRequest()
-                    .hasAnyAuthority(AUTHORITY_READ, AUTHORITY_WRITE);
+                    .access("hasAuthority('WRITE')");
         return httpSecurity.build();
     }
 
