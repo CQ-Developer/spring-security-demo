@@ -12,7 +12,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 public class AppSecurityConfiguration {
@@ -42,8 +41,7 @@ public class AppSecurityConfiguration {
         httpSecurity.csrf()
                     .disable();
         httpSecurity.authorizeRequests()
-                    .mvcMatchers(GET, "/a").authenticated()
-                    .mvcMatchers(POST, "/a").permitAll()
+                    .mvcMatchers(GET, "/a/**").authenticated()
                     .anyRequest().denyAll();
         return httpSecurity.build();
     }
