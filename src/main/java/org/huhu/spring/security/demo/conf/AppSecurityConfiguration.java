@@ -12,8 +12,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 
-import static org.springframework.http.HttpMethod.GET;
-
 @Configuration
 public class AppSecurityConfiguration {
 
@@ -37,6 +35,8 @@ public class AppSecurityConfiguration {
 
     /**
      * 使用 {@link MvcRequestMatcher} 匹配指定的访问路径.
+     * 匹配路径参数, 只有参数值匹配正则表达式时, 次路径的规则才应用.
+     * {@code ^[0-9]*$} 当路径参数为数字时, 可以随便访问.
      *
      * @see MvcRequestMatcher
      */
@@ -47,7 +47,7 @@ public class AppSecurityConfiguration {
         httpSecurity.csrf()
                     .disable();
         httpSecurity.authorizeRequests()
-                    .mvcMatchers(GET, "/a/**").authenticated()
+                    .mvcMatchers("/product/{code:^[0-9]*$}").permitAll()
                     .anyRequest().denyAll();
         return httpSecurity.build();
     }
