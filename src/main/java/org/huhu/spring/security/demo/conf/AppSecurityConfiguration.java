@@ -11,8 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-
-import static org.springframework.http.HttpMethod.GET;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class AppSecurityConfiguration {
@@ -36,9 +35,14 @@ public class AppSecurityConfiguration {
     }
 
     /**
-     * 使用 {@link MvcRequestMatcher} 匹配指定的访问路径.
+     * 使用 {@link AntPathRequestMatcher} 匹配指定的访问路径.
+     * 使用方法和 {@link MvcRequestMatcher} 基本相同, 但是要注意:
+     * 对于路径"/a"需要已认证的用户才能访问.
+     * 但如果访问"/a/"则可以跳过认证.
+     * 这是 {@link AntPathRequestMatcher} 和 {@link MvcRequestMatcher} 的一个非常重要的区别.
+     * 推荐使用 {@link MvcRequestMatcher}.
      *
-     * @see MvcRequestMatcher
+     * @see AntPathRequestMatcher
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -47,8 +51,8 @@ public class AppSecurityConfiguration {
         httpSecurity.csrf()
                     .disable();
         httpSecurity.authorizeRequests()
-                    .mvcMatchers(GET, "/a/**").authenticated()
-                    .anyRequest().denyAll();
+                    .antMatchers("/hello").authenticated()
+                    .anyRequest().permitAll();
         return httpSecurity.build();
     }
 
