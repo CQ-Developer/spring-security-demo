@@ -10,9 +10,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 public class AppSecurityConfiguration {
@@ -35,6 +35,11 @@ public class AppSecurityConfiguration {
         return NoOpPasswordEncoder.getInstance();
     }
 
+    /**
+     * 使用 {@link MvcRequestMatcher} 匹配指定的访问路径.
+     *
+     * @see MvcRequestMatcher
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.httpBasic();
@@ -42,8 +47,7 @@ public class AppSecurityConfiguration {
         httpSecurity.csrf()
                     .disable();
         httpSecurity.authorizeRequests()
-                    .mvcMatchers(GET, "/a").authenticated()
-                    .mvcMatchers(POST, "/a").permitAll()
+                    .mvcMatchers(GET, "/a/**").authenticated()
                     .anyRequest().denyAll();
         return httpSecurity.build();
     }
