@@ -11,3 +11,5 @@ openssl req -newkey rsa:2048 -x509 -keyout key.pem -out cert.pem -days 365
 # Public Key Cryptography Standards #12
 openssl pkcs12 -export -in cert.pem -inkey key.pem -out certificate.p12 -name "certificate"
 ```
+
+查看官网的`Servlet Applications`的[Architecture](https://docs.spring.io/spring-security/reference/5.7.3/servlet/architecture.html)章节，其中对 `Filter` 的架构细则做了更详细的说明.
