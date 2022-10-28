@@ -1,4 +1,4 @@
-package org.huhu.spring.security.demo.servlet.filter;
+package org.huhu.spring.security.demo.conf.security.filter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -8,6 +8,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 /**
  * 自定义一个 {@link Filter} 的实现,
@@ -22,7 +24,7 @@ public class CustomizedRequestValidationFilter implements Filter {
         String requestId = httpRequest.getHeader("Request-Id");
         if (requestId == null || requestId.isBlank()) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            httpResponse.setStatus(SC_BAD_REQUEST);
             return;
         }
         chain.doFilter(request, response);
