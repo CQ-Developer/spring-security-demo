@@ -15,9 +15,19 @@ import java.io.IOException;
  * 自定义个 {@link Filter} 的实现,
  * 在成功认证之后记录 {@code Request-Id} 信息.
  *
- * 通过 {@link OncePerRequestFilter} 保证该过滤器每个请求只会执行一次
+ * <p>通过 {@link org.springframework.web.filter.OncePerRequestFilter} 保证该过滤器每个请求只会执行一次,
  *
- * @see OncePerRequestFilter
+ * <p>通过重写 {@link #shouldNotFilter} 方法,
+ * 控制过滤器是否对当前的请求应用.
+ *
+ * <p>通过重写 {@link #shouldNotFilterAsyncDispatch} 方法,
+ * 控制过滤器是否应用于异步请求.
+ *
+ * <p>通过重写 {@link #shouldNotFilterErrorDispatch} 方法,
+ * 控制过滤器是否应用于错误分发请求.
+ *
+ * @see org.springframework.web.filter.GenericFilterBean
+ * @see org.springframework.web.filter.OncePerRequestFilter
  */
 public class CustomizedAuthenticationLoggingFilter extends OncePerRequestFilter {
 
