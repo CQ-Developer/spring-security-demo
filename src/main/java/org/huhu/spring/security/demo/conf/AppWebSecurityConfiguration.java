@@ -1,5 +1,7 @@
 package org.huhu.spring.security.demo.conf;
 
+import org.huhu.spring.security.demo.csrf.CustomizedCsrfTokenRepository;
+import org.huhu.spring.security.demo.repository.TokenJpaRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -36,10 +38,17 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class AppWebSecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity httpSecurity, TokenJpaRepository tokenJpaRepository) throws Exception {
+        httpSecurity.headers()
+                    .frameOptions()
+                    .sameOrigin();
         httpSecurity.csrf()
-                    .ignoringAntMatchers("/ciao");
-        httpSecurity.authorizeRequests().anyRequest().permitAll();
+                    .ignoringAntMatchers("/ciao", "/h2/**")
+                    .csrfTokenRepository(new CustomizedCsrfTokenRepository(tokenJpaRepository));
+        httpSecurity.authorizeRequests()
+                    .anyRequest()
+                    .permitAll();
         return httpSecurity.build();
     }
 
