@@ -5,9 +5,7 @@ import org.huhu.spring.security.demo.service.AuthenticationServerProxy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class UsernamePasswordAuthenticationProvider implements AuthenticationProvider {
 
     private final AuthenticationServerProxy authenticationServerProxy;

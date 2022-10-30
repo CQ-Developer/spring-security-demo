@@ -4,11 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.huhu.spring.security.demo.authentication.UsernamePasswordAuthentication;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -21,11 +19,9 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.signing.key}")
-    private String signingKey;
+    private final String signingKey = "ymLTU8rq83j4fmJZj60wh4OrMNuntIj4fmJ";
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

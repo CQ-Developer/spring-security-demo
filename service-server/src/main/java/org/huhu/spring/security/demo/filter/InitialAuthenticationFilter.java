@@ -4,10 +4,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.huhu.spring.security.demo.authentication.OtpAuthentication;
 import org.huhu.spring.security.demo.authentication.UsernamePasswordAuthentication;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -20,13 +18,11 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Component
 public class InitialAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    @Value("${jwt.signing.key}")
-    private String signingKey;
+    private final String signingKey = "ymLTU8rq83j4fmJZj60wh4OrMNuntIj4fmJ";
 
     public InitialAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;

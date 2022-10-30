@@ -4,58 +4,45 @@ import org.huhu.spring.security.demo.authentication.provider.OtpAuthenticationPr
 import org.huhu.spring.security.demo.authentication.provider.UsernamePasswordAuthenticationProvider;
 import org.huhu.spring.security.demo.filter.InitialAuthenticationFilter;
 import org.huhu.spring.security.demo.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.huhu.spring.security.demo.service.AuthenticationServerProxy;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class ProjectConfiguration extends WebSecurityConfigurerAdapter {
+public class ProjectConfiguration {
 
-    @Autowired
-    private InitialAuthenticationFilter initialAuthenticationFilter;
-
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
-
-    @Autowired
-    private OtpAuthenticationProvider otpAuthenticationProvider;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(usernamePasswordAuthenticationProvider)
-            .authenticationProvider(otpAuthenticationProvider);
+    @Bean
+    public AuthenticationManager authenticationManager (AuthenticationServerProxy authenticationServerProxy, AuthenticationEventPublisher authenticationEventPublisher) {
+        UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider = new UsernamePasswordAuthenticationProvider(authenticationServerProxy);
+        OtpAuthenticationProvider otpAuthenticationProvider = new OtpAuthenticationProvider(authenticationServerProxy);
+        ProviderManager providerManager = new ProviderManager(usernamePasswordAuthenticationProvider, otpAuthenticationProvider);
+        providerManager.setAuthenticationEventPublisher(authenticationEventPublisher);
+        return providerManager;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf()
-            .disable();
-        http.authorizeRequests()
-            .anyRequest()
-            .authenticated();
-        http.addFilterAt(initialAuthenticationFilter, BasicAuthenticationFilter.class)
-            .addFilterAfter(jwtAuthenticationFilter, BasicAuthenticationFilter.class);
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
+        httpSecurity.csrf()
+                    .disable();
+        httpSecurity.authorizeRequests()
+                    .anyRequest()
+                    .authenticated();
+        httpSecurity.addFilterAt(new InitialAuthenticationFilter(authenticationManager), BasicAuthenticationFilter.class)
+                    .addFilterAfter(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class);
+        return httpSecurity.build();
     }
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder.build();
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 
 }
