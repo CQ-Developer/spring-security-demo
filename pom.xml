@@ -22,5 +22,6 @@
 
     <modules>
         <module>auth-server</module>
+        <module>service-server</module>
     </modules>
 </project>

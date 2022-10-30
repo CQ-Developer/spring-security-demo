@@ -1,0 +1,5 @@
+server:
+  port: 8080
+jwt:
+  signing:
+    key: ymLTU8rq83j4fmJZj60wh4OrMNuntIj4fmJ
