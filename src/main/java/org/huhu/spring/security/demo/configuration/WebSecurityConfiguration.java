@@ -1,0 +1,50 @@
+package org.huhu.spring.security.demo.configuration;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    /**
+     * 在授权服务器授权前, 用户需要向授权服务进行认证.
+     * 这里预制一个用户方便登录使用.
+     *
+     * @see #customizeUserDetailsService
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customizeUserDetailsService())
+            .passwordEncoder(NoOpPasswordEncoder.getInstance());
+    }
+
+    /**
+     * 将 {@link AuthenticationManager} 作为Bean暴露给 {@link ApplicationContext}.
+     * 以便在授权服务器中使用.
+     *
+     * @see Oauth2AuthorizationServerConfiguration
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    private UserDetailsService customizeUserDetailsService() {
+        UserDetails john = User.withUsername("john")
+                               .password("123")
+                               .authorities("read")
+                               .build();
+        return new InMemoryUserDetailsManager(john);
+    }
+
+}
