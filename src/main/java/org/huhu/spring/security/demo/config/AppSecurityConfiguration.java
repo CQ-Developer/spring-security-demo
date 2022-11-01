@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -15,19 +14,15 @@ public class AppSecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.oauth2Login();
+        httpSecurity.oauth2Login()
+                    .clientRegistrationRepository(new InMemoryClientRegistrationRepository(githubClientRegistration()));
         httpSecurity.authorizeRequests()
                     .anyRequest()
                     .authenticated();
         return httpSecurity.build();
     }
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(clientRegistration());
-    }
-
-    private ClientRegistration clientRegistration() {
+    private ClientRegistration githubClientRegistration() {
         return GITHUB.getBuilder("github")
                      .clientId("147b7388f3f222a8a6cc")
                      .clientSecret("e74c289ab246d6dac1fc00c5790771d466ac3064")
