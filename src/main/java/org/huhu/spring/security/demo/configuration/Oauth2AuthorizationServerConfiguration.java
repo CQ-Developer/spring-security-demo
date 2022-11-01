@@ -7,11 +7,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.client.BaseClientDetails;
-import org.springframework.security.oauth2.provider.client.InMemoryClientDetailsService;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 通过注解 {@link EnableAuthorizationServer} 指示SpringBoot启用OAuth2授权服务器的配置.
@@ -45,16 +40,11 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        BaseClientDetails clientDetails = new BaseClientDetails();
-        clientDetails.setClientId("client");
-        clientDetails.setClientSecret("secret");
-        clientDetails.setScope(List.of("read"));
-        clientDetails.setAuthorizedGrantTypes(List.of("password"));
-
-        InMemoryClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
-        clientDetailsService.setClientDetailsStore(Map.of("client", clientDetails));
-
-        clients.withClientDetails(clientDetailsService);
+        clients.inMemory()
+               .withClient("client")
+               .secret("secret")
+               .authorizedGrantTypes("password")
+               .scopes("read");
     }
 
 }
