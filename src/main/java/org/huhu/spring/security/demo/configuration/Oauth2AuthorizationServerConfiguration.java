@@ -43,8 +43,8 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
         clients.inMemory()
                .withClient("client")
                .secret("secret")
-               .authorizedGrantTypes("password")
-               .scopes("read");
+               .authorizedGrantTypes("client_credentials")
+               .scopes("info");
     }
 
 }
