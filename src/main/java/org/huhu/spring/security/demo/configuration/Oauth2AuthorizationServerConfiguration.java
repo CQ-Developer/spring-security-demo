@@ -37,14 +37,16 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
 
     /**
      * OAuth2授权服务器通过 {@link ClientDetailsService} 管理客户端.
+     * 使用授权码类型的授权.
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                .withClient("client")
                .secret("secret")
-               .authorizedGrantTypes("password")
-               .scopes("read");
+               .authorizedGrantTypes("authorization_code")
+               .scopes("read")
+               .redirectUris("http://localhost:8080/home");
     }
 
 }
