@@ -42,9 +42,17 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-               .withClient("client")
+               .withClient("client1")
                .secret("secret")
                .authorizedGrantTypes("authorization_code")
+               .scopes("read")
+               .redirectUris("http://localhost:8080/home")
+               .and()
+               // 为client2用户配置多种认证方式
+               .inMemory()
+               .withClient("client2")
+               .secret("secret")
+               .authorizedGrantTypes("authorization_code", "password", "refresh_token")
                .scopes("read")
                .redirectUris("http://localhost:8080/home");
     }
