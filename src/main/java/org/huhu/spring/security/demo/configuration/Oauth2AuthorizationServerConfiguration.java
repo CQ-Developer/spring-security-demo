@@ -43,7 +43,9 @@ public class Oauth2AuthorizationServerConfiguration extends AuthorizationServerC
         clients.inMemory()
                .withClient("client")
                .secret("secret")
-               .authorizedGrantTypes("password")
+               // 使用密码授权类型
+               // 在响应中会携带一个刷新令牌
+               .authorizedGrantTypes("password", "refresh_token")
                .scopes("read");
     }
 
