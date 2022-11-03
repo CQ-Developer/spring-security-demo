@@ -1,0 +1,13 @@
+package org.huhu.oauth.rs;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ResourceServer {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ResourceServer.class, args);
+    }
+
+}
