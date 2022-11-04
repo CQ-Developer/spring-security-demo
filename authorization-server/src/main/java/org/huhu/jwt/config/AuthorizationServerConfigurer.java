@@ -7,7 +7,6 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -50,15 +49,7 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                .withClient("client")
                .secret("secret")
                .authorizedGrantTypes("password", "refresh_token")
-               .scopes("read")
-               .and()
-               .withClient("resourceserver")
-               .secret("resourceserversecret");
-    }
-
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.tokenKeyAccess("isAuthenticated()");
+               .scopes("read");
     }
 
     private TokenEnhancer tokenEnhancer() {
