@@ -1,11 +1,13 @@
 package org.huhu.jwt.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -68,16 +70,9 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        // 为JWT添加非对称密钥
-        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setKeyPair(loadKeyPair());
-
-        // 启用JWT
-        JwtTokenStore jwtTokenStore = new JwtTokenStore(jwtAccessTokenConverter);
-
         endpoints.authenticationManager(authenticationManager)
-                 .tokenStore(jwtTokenStore)
-                 .accessTokenConverter(jwtAccessTokenConverter);
+                 .tokenStore(jwtTokenStore())
+                 .accessTokenConverter(jwtAccessTokenConverter());
     }
 
     @Override
@@ -87,6 +82,23 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                .secret("secret")
                .authorizedGrantTypes("password", "refresh_token")
                .scopes("read");
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.tokenKeyAccess("isAuthenticated()");
+    }
+
+    @Bean
+    public JwtTokenStore jwtTokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setKeyPair(loadKeyPair());
+        return jwtAccessTokenConverter;
     }
 
     private KeyPair loadKeyPair() {
