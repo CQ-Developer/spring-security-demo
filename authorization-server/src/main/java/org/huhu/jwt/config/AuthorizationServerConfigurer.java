@@ -81,7 +81,10 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                .withClient("client")
                .secret("secret")
                .authorizedGrantTypes("password", "refresh_token")
-               .scopes("read");
+               .scopes("read")
+               .and()
+               .withClient("resourceserver")
+               .secret("resourceserversecret");
     }
 
     @Override
