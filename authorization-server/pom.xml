@@ -13,10 +13,6 @@
 
     <artifactId>authorization-server</artifactId>
 
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
