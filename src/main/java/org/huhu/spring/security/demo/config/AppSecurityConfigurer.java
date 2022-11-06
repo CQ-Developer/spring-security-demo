@@ -21,11 +21,11 @@ public class AppSecurityConfigurer {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails chen = User.withUsername("chen")
+        UserDetails chen = User.withUsername("zhang")
                                .password("123")
                                .authorities("read", "write")
                                .build();
-        UserDetails ruan = User.withUsername("ruan")
+        UserDetails ruan = User.withUsername("li")
                                .password("123")
                                .authorities("read")
                                .build();
