@@ -9,9 +9,9 @@ import java.util.Map;
 public class DocumentRepository {
 
     private final Map<String, Document> documents = Map.of(
-            "abc123", new Document("natalie"),
-            "qwe123", new Document("natalie"),
-            "asd555", new Document("emma"));
+            "abc123", new Document("chen"),
+            "qwe123", new Document("chen"),
+            "asd555", new Document("huhu"));
 
     public Document findDocument(String code) {
         return documents.get(code);
