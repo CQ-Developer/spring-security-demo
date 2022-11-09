@@ -1,19 +1,20 @@
 package org.huhu.spring.security.demo.repository;
 
+import org.huhu.spring.security.demo.config.AppSecurityConfigurer;
 import org.huhu.spring.security.demo.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     /**
-     * 并不推荐这种做法.
-     * 因为会先查询数据库中的所有数据再根据授权条件过滤结果集.
-     * 注意也可以使用 {@code filterObject.owner == authentication.principal.username}
+     * 在 Spring Data 的查询语句中直接使用 Spring Security 提供的 SpEL.
+     *
+     * @see AppSecurityConfigurer#securityEvaluationContextExtension
      */
-    @PostFilter("filterObject.owner == authentication.name")
+    @Query("SELECT p FROM t_product p WHERE p.name LIKE %:text% AND p.owner = ?#{authentication.name}")
     List<Product> findProductByNameContains(String text);
 
 }

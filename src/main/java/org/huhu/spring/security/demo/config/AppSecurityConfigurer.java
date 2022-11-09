@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -32,6 +33,15 @@ public class AppSecurityConfigurer {
                 .authorities("read")
                 .build();
         return new InMemoryUserDetailsManager(jack, rose);
+    }
+
+    /**
+     * 通过将 {@link SecurityEvaluationContextExtension} 暴露为 {@link Bean},
+     * 使得 Spring Data 的查询表达式可以使用 Spring Security 的 SpEL.
+     */
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
     }
 
     /**
