@@ -25,6 +25,8 @@ public class ProductService {
      * <p>在 {@link PreFilter} 中通过 {@code authentication} 可以引用存储在 {@link SecurityContext}
      * 中的 {@link Authentication} 对象.
      *
+     * <p>注意预过滤和后过滤只适用于数组或集合.
+     *
      * @see AppSecurityConfiguration
      */
     @PreFilter("filterObject.owner == authentication.name")
