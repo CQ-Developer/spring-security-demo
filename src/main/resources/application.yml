@@ -22,3 +22,9 @@ spring:
       mode: embedded
       schema-locations: classpath:sql/schema.sql
       data-locations: classpath:sql/data.sql
+  jpa:
+    database: h2
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
