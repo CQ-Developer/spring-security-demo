@@ -1,0 +1,3 @@
+INSERT IGNORE INTO T_PRODUCT (ID, NAME, OWNER) VALUES ('1', 'beer', 'nikolai');
+INSERT IGNORE INTO T_PRODUCT (ID, NAME, OWNER) VALUES ('2', 'candy', 'nikolai');
+INSERT IGNORE INTO T_PRODUCT (ID, NAME, OWNER) VALUES ('3', 'chocolate', 'julien');
