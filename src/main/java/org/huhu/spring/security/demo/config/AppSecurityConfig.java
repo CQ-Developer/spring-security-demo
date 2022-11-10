@@ -6,9 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec.Access;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -19,8 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.authorization.AuthorizationContext;
+import reactor.core.publisher.Mono;
 
-import static org.springframework.http.HttpMethod.GET;
+import java.time.LocalTime;
+
+import static java.time.LocalTime.NOON;
 
 @Configuration
 public class AppSecurityConfig {
@@ -46,7 +54,7 @@ public class AppSecurityConfig {
      */
     @Bean
     public ReactiveUserDetailsService reactiveUserDetailsService() {
-        UserDetails jack = User.withUsername("jack").password("123456").authorities("read").build();
+        UserDetails jack = User.withUsername("jack").password("123456").roles("ADMIN").build();
         return new MapReactiveUserDetailsService(jack);
     }
 
@@ -70,14 +78,33 @@ public class AppSecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
         return httpSecurity
                 .httpBasic(Customizer.withDefaults())
-                .authorizeExchange(this::authorizeExchange)
+                .authorizeExchange(this::doMatch)
                 .build();
     }
 
-    private void authorizeExchange(ServerHttpSecurity.AuthorizeExchangeSpec exchangeMatcherRegistry) {
-        exchangeMatcherRegistry
-                .pathMatchers(GET, "/hello").authenticated()
-                .anyExchange().permitAll();
+    private void doMatch(ServerHttpSecurity.AuthorizeExchangeSpec exchangeMatcherRegistry) {
+        exchangeMatcherRegistry.anyExchange().access(this::doCheck);
+    }
+
+    /**
+     * 通过 {@link Access#access} 自定义授权规则.
+     *
+     * <p>必须在中午之前才能访问.
+     *
+     * <p>当访问 {@code /hello} 时, 必须具备 {@code ADMIN} 权限.
+     */
+    private Mono<AuthorizationDecision> doCheck(Mono<Authentication> authentication, AuthorizationContext authorizationContext) {
+        String path = authorizationContext.getExchange().getRequest().getPath().value();
+        Mono<Boolean> isBeforeNoon = Mono.just(LocalTime.now().isBefore(NOON));
+        if ("/hello".equals(path)) {
+            return authentication.flatMapIterable(Authentication::getAuthorities)
+                    .map(GrantedAuthority::getAuthority)
+                    .doOnNext(System.out::println)
+                    .any("ROLE_ADMIN"::equals)
+                    .zipWith(isBeforeNoon, Boolean::logicalAnd)
+                    .map(AuthorizationDecision::new);
+        }
+        return isBeforeNoon.map(AuthorizationDecision::new);
     }
 
 }
