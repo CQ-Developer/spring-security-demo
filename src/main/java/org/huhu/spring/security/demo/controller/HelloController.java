@@ -1,6 +1,8 @@
 package org.huhu.spring.security.demo.controller;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -9,8 +11,11 @@ import reactor.core.publisher.Mono;
 public class HelloController {
 
     @GetMapping("/hello")
-    public Mono<String> hello(Mono<Authentication> authentication) {
-        return authentication.map(a -> "Hello, " + a.getName());
+    public Mono<String> hello() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getName)
+                .map(n -> "Hello " + n);
     }
 
 }
