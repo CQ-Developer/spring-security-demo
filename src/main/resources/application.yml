@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9090
   ssl:
     protocol: TLSv1.3
     key-store-type: PKCS12
