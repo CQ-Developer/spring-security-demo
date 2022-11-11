@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -29,7 +31,7 @@ class TestApp {
                 .status()
                 .isUnauthorized();
 
-        ResultHandler resultHandler = MockMvcResultHandlers.log();
+        ResultHandler resultHandler = MockMvcResultHandlers.print();
 
         mockMvc.perform(requestBuilder)
                 .andExpect(resultMatcher)
@@ -37,14 +39,11 @@ class TestApp {
     }
 
     /**
-     * 当使用 {@link WithMockUser} 时将跳过整个认证过程,
-     * 而直接进入授权过程.
-     *
-     * <p>需要注意的是, 授权过程是发生在认证过程之后的.
+     * 当使用 {@link WithMockUser} 时可以指定摸一个具体的用户.
      */
     @Test
-    @WithMockUser
-    @DisplayName("调用/hello端点并提供一个用户")
+    @WithMockUser(username = "jack")
+    @DisplayName("调用/hello端点并提供一个具体的用户")
     void test_2() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/hello");
@@ -54,9 +53,38 @@ class TestApp {
                 .isOk();
         ResultMatcher resultMatcherContent = MockMvcResultMatchers
                 .content()
-                .string("Hello!");
+                .string("Hello jack");
 
-        ResultHandler resultHandler = MockMvcResultHandlers.log();
+        ResultHandler resultHandler = MockMvcResultHandlers.print();
+
+        mockMvc.perform(requestBuilder)
+                .andExpectAll(resultMatcherStatus)
+                .andExpect(resultMatcherContent)
+                .andDo(resultHandler);
+    }
+
+    /**
+     * 使用 {@link RequestPostProcessor} 和 {@link WithMockUser} 的主要区别是,
+     * {@link RequestPostProcessor} 是在创建完测试请求后, 再构建安全环境.
+     * 而 {@link WithMockUser} 会首先构建测试安全环境, 再创建测试请求.
+     */
+    @Test
+    @DisplayName("调用/hello端点并通过RequestPostProcessor提供一个用户")
+    void test_3() throws Exception {
+        RequestPostProcessor requestPostProcessor = SecurityMockMvcRequestPostProcessors
+                .user("rose");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/hello")
+                .with(requestPostProcessor);
+
+        ResultMatcher resultMatcherStatus = MockMvcResultMatchers
+                .status()
+                .isOk();
+        ResultMatcher resultMatcherContent = MockMvcResultMatchers
+                .content()
+                .string("Hello rose");
+
+        ResultHandler resultHandler = MockMvcResultHandlers.print();
 
         mockMvc.perform(requestBuilder)
                 .andExpectAll(resultMatcherStatus)
