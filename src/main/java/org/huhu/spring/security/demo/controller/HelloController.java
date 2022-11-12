@@ -1,20 +1,19 @@
 package org.huhu.spring.security.demo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
 
-    @GetMapping("/hello")
-    public String getHello() {
-        return "get hello";
-    }
+    private final Logger logger = LoggerFactory.getLogger(HelloController.class);
 
-    @PostMapping("/hello")
-    public String postHello() {
-        return "post hello";
+    @PostMapping("/test")
+    public String test() {
+        logger.info("Test method called");
+        return "HELLO";
     }
 
 }
