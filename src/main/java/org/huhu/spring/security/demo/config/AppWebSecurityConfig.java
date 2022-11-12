@@ -28,10 +28,16 @@ public class AppWebSecurityConfig {
                 .build();
     }
 
+    /**
+     * 配置CORS
+     */
     private void doConfigureCors(CorsConfigurer<HttpSecurity> corsConfigurer) {
         corsConfigurer.configurationSource(this::defineCorsConfiguration);
     }
 
+    /**
+     * CORS策略
+     */
     private CorsConfiguration defineCorsConfiguration(HttpServletRequest request) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedMethods(List.of(ALL));
@@ -49,7 +55,8 @@ public class AppWebSecurityConfig {
     /**
      * 自定义授权规则
      */
-    private void configureRequestMatcher(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry expressionInterceptUrlRegistry) {
+    private void configureRequestMatcher(
+            ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry expressionInterceptUrlRegistry) {
         expressionInterceptUrlRegistry.anyRequest().permitAll();
     }
 
