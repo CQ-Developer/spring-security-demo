@@ -71,8 +71,19 @@ class TestHelloController {
 
     @Test
     @WithMockUser
-    @DisplayName("调用/hello端点-模拟用户")
+    @DisplayName("调用/hello端点-csrf拦截")
     void test_5() {
+        webTestClient.post()
+                .uri("/hello")
+                .exchange()
+                .expectStatus()
+                .isForbidden();
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("调用/hello端点-csrf通过")
+    void test_6() {
         WebTestClientConfigurer csrfConfigurer = SecurityMockServerConfigurers.csrf();
         webTestClient.mutateWith(csrfConfigurer)
                 .post()
