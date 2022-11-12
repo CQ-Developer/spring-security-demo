@@ -27,7 +27,7 @@ public class AppWebSecurityConfig {
      * 自定义授权规则
      */
     private void configureRequestMatcher(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry expressionInterceptUrlRegistry) {
-        expressionInterceptUrlRegistry.anyRequest().authenticated();
+        expressionInterceptUrlRegistry.anyRequest().permitAll();
     }
 
 }
