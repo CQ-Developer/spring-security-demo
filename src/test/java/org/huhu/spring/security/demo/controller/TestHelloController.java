@@ -21,7 +21,7 @@ class TestHelloController {
 
     @Test
     @DisplayName("调用/hello端点-不使用凭证")
-    void test_1() throws Exception {
+    void test_1() {
         webTestClient.get()
                 .uri("/hello")
                 .exchange()
@@ -32,7 +32,7 @@ class TestHelloController {
     @Test
     @WithMockUser
     @DisplayName("调用/hello端点-模拟用户")
-    void test_2() throws Exception {
+    void test_2() {
         webTestClient.get()
                 .uri("/hello")
                 .exchange()
@@ -45,7 +45,7 @@ class TestHelloController {
     @Test
     @WithUserDetails("jack")
     @DisplayName("调用/hello端点-实际用户")
-    void test_3() throws Exception {
+    void test_3() {
         webTestClient.get()
                 .uri("/hello")
                 .exchange()
@@ -57,11 +57,25 @@ class TestHelloController {
 
     @Test
     @DisplayName("调用/hello端点-模拟用户")
-    void test_4() throws Exception {
-        WebTestClientConfigurer webTestClientConfigurer = SecurityMockServerConfigurers
-                .mockUser();
+    void test_4() {
+        WebTestClientConfigurer webTestClientConfigurer = SecurityMockServerConfigurers.mockUser();
         webTestClient.mutateWith(webTestClientConfigurer)
                 .get()
+                .uri("/hello")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(String.class)
+                .isEqualTo("Hello!");
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("调用/hello端点-模拟用户")
+    void test_5() {
+        WebTestClientConfigurer csrfConfigurer = SecurityMockServerConfigurers.csrf();
+        webTestClient.mutateWith(csrfConfigurer)
+                .post()
                 .uri("/hello")
                 .exchange()
                 .expectStatus()
