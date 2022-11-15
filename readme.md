@@ -77,3 +77,36 @@ public class AppConfig {
 
 }
 ```
+
+### About RoleHierarchy
+
+`org.springframework.security.access.hierarchicalroles.RoleHierarchy` will have different behaviors in some scenarios.
+
+---
+
+When use `org.springframework.security.web.access.intercept.FilterSecurityInterceptor`,
+you can simply enable `org.springframework.security.access.hierarchicalroles.RoleHierarchy` like this:
+
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy = """
+                ROLE_ADMIN > ROLE_DEV
+                ROLE_DEV > RULE_USER
+                """;
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
+    }
+
+}
+```
+
