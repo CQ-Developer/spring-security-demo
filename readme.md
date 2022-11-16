@@ -22,6 +22,8 @@ there are something should be noted in servlet environment:
 
 ---
 
+### SecurityContextPersistenceFilter or SecurityContextHolderFilter
+
 `org.springframework.security.web.context.SecurityContextPersistenceFilter` is deprecated since `3.0`, but it is
 configured by default.
 
@@ -50,6 +52,8 @@ public class AppConfig {
 ```
 
 ---
+
+### FilterSecurityInterceptor or AuthorizationFilter
 
 `org.springframework.security.web.access.intercept.AuthorizationFilter` is available since `5.5`,
 but spring security still use `org.springframework.security.web.access.intercept.FilterSecurityInterceptor` as default.
