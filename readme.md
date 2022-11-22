@@ -16,7 +16,7 @@ openssl pkcs12 -export -in cert.pem -inkey key.pem -out certificate.p12 -name "c
 
 ```shell
 # 将私钥转换到pkcs8格式
-# 使用 -nocrypt 输出铭文私钥
+# 使用 -nocrypt 输出明文私钥
 openssl pkcs8 -topk8 -nocrypt -inform PEM -outform PEM -in key.pem -out unencryptedKey.pem
 ```
 
