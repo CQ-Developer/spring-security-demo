@@ -35,7 +35,7 @@ public class App {
     }
 
     /**
-     * 打印出在当前配置下, spring security
+     * 获取当前配置下, spring security
      * 在 {@link FilterChainProxy} 中所配置的所有 {@link Filter}.
      */
     private void printFilters(FilterChainProxy filterChainProxy) {
@@ -44,6 +44,10 @@ public class App {
         filterChains.forEach(this::doPrint);
     }
 
+    /**
+     * 打印出在当前配置下, spring security
+     * 在 {@link FilterChainProxy} 中所配置的所有 {@link Filter}.
+     */
     private void doPrint(SecurityFilterChain securityFilterChain) {
         List<Filter> filters = securityFilterChain.getFilters();
         for (int i = 0; i < filters.size(); i++) {
